@@ -60,51 +60,61 @@ function file_ico($item){
 <div class="nexmoe-item">
 <div class="mdui-row">
 	<ul class="mdui-list">
-		<li class="mdui-list-item th">
-		  <div class="mdui-col-xs-12 mdui-col-sm-7">文件 <i class="mdui-icon material-icons icon-sort" data-sort="name" data-order="downward">expand_more</i></div>
-		  <div class="mdui-col-sm-3 mdui-text-right">修改时间 <i class="mdui-icon material-icons icon-sort" data-sort="date" data-order="downward">expand_more</i></div>
-		  <div class="mdui-col-sm-2 mdui-text-right">大小 <i class="mdui-icon material-icons icon-sort" data-sort="size" data-order="downward">expand_more</i></div>
-		</li>
-		<?php if($path != '/'):?>
-		<li class="mdui-list-item mdui-ripple">
-			<a href="<?php echo get_absolute_path($root.$path.'../');?>">
-			  <div class="mdui-col-xs-12 mdui-col-sm-7">
-				<i class="mdui-icon material-icons">arrow_upward</i>
-		    	..
-			  </div>
-			  <div class="mdui-col-sm-3 mdui-text-right"></div>
-			  <div class="mdui-col-sm-2 mdui-text-right"></div>
-		  	</a>
-		</li>
-		<?php endif;?>
-		
-		<?php foreach((array)$items as $item):?>
-			<?php if(!empty($item['folder'])):?>
+        <li class="mdui-list-item th">
+        <div class="mdui-col-xs-12 mdui-col-sm-7">文件 <i class="mdui-icon material-icons icon-sort" data-sort="name" data-order="downward">expand_more</i></div>
+        <div class="mdui-col-sm-3 mdui-text-right">修改时间 <i class="mdui-icon material-icons icon-sort" data-sort="date" data-order="downward">expand_more</i></div>
+        <div class="mdui-col-sm-2 mdui-text-right">大小 <i class="mdui-icon material-icons icon-sort" data-sort="size" data-order="downward">expand_more</i></div>
+    </li>
+    <?php if($path != '/'):?>
+    <li class="mdui-list-item mdui-ripple">
+        <a href="<?php echo get_absolute_path($root.$path.'../');?>">
+            <div class="mdui-col-xs-12 mdui-col-sm-7">
+            <i class="mdui-icon material-icons">arrow_upward</i>
+                ..
+            </div>
+            <div class="mdui-col-sm-3 mdui-text-right"></div>
+            <div class="mdui-col-sm-2 mdui-text-right"></div>
+            </a>
+    </li>
+    <?php endif;?>
+    <?php 
+    $ctime_str = array();
+            foreach((array)$items as $key=>$v){
+            (array)$items[$key]['ctime_str'] = $v['lastModifiedDateTime'];
+            $ctime_str[] = (array)$items[$key]['ctime_str']+$v;
+    }
+        array_multisort($ctime_str,SORT_DESC);
+        /**
+        主要是修改了这个位置的代码，把排序好的数组重新用foreach进行一次遍历即可；
+        **/
+    ?>
+    <?php foreach($ctime_str as $item):?>
+        <?php if(!empty($item['folder'])):?>
 
-		<li class="mdui-list-item mdui-ripple">
-			<a href="<?php echo get_absolute_path($root.$path.rawurlencode($item['name']));?>">
-			  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
-				<i class="mdui-icon material-icons">folder_open</i>
-		    	<span><?php e($item['name']);?></span>
-			  </div>
-			  <div class="mdui-col-sm-3 mdui-text-right"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
-			  <div class="mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
-		  	</a>
-		</li>
-			<?php else:?>
-		<li class="mdui-list-item file mdui-ripple">
-			<a href="<?php echo get_absolute_path($root.$path).rawurlencode($item['name']);?>" target="_blank">
-			  <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
-				<i class="mdui-icon material-icons"><?php echo file_ico($item);?></i>
-		    	<span><?php e($item['name']);?></span>
-			  </div>
-			  <div class="mdui-col-sm-3 mdui-text-right"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
-			  <div class="mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
-		  	</a>
-		</li>
-			<?php endif;?>
-		<?php endforeach;?>
-	</ul>
+    <li class="mdui-list-item mdui-ripple">
+        <a href="<?php echo get_absolute_path($root.$path.rawurlencode($item['name']));?>">
+            <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
+            <i class="mdui-icon material-icons">folder_open</i>
+                <span><?php e($item['name']);?></span>
+            </div>
+            <div class="mdui-col-sm-3 mdui-text-right"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
+            <div class="mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
+            </a>
+    </li>
+        <?php else:?>
+    <li class="mdui-list-item file mdui-ripple">
+        <a href="<?php echo get_absolute_path($root.$path).rawurlencode($item['name']);?>" target="_blank">
+            <div class="mdui-col-xs-12 mdui-col-sm-7 mdui-text-truncate">
+            <i class="mdui-icon material-icons"><?php echo file_ico($item);?></i>
+                <span><?php e($item['name']);?></span>
+            </div>
+            <div class="mdui-col-sm-3 mdui-text-right"><?php echo date("Y-m-d H:i:s", $item['lastModifiedDateTime']);?></div>
+            <div class="mdui-col-sm-2 mdui-text-right"><?php echo onedrive::human_filesize($item['size']);?></div>
+            </a>
+    </li>
+        <?php endif;?>
+    <?php endforeach;?>
+ </ul>
 </div>
 </div>
 <?php if($readme):?>
